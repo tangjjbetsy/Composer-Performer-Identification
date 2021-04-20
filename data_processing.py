@@ -68,7 +68,7 @@ for i in tqdm(range(data_length)):
     X[int(i*16):int((i+1)*16),] = mel
     Y[int(i*16):int((i+1)*16),] = y
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.1)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state=42, test_size=0.1)
 
 np.save("X_train", X_train)
 np.save("y_train", y_train)
