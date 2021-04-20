@@ -1,7 +1,34 @@
 import librosa
 import pandas as pd
 import numpy as np
-import pickle
+from tqdm import tqdm
+
+def norm(spec):
+    mean = np.reshape(np.mean(spec, axis=1), (spec.shape[0],1))
+    std = np.reshape(np.std(spec, axis=1), (spec.shape[0],1))
+    spec = np.divide(np.subtract(spec,np.repeat(mean, spec.shape[1], axis=1)), np.repeat(std, spec.shape[1], axis=1))
+    return spec
+
+def pad_trunc_seq(x, max_len):
+    """Pad or truncate a sequence data to a fixed length. 
+    
+    Args:
+      x: ndarray, input sequence data. 
+      max_len: integer, length of sequence to be padded or truncated. 
+      
+    Returns:
+      ndarray, Padded or truncated input sequence data. 
+    """
+    L = len(x)
+    shape = x.shape
+    if L < max_len:
+        pad_shape = (max_len - L,) + shape[1:]
+        pad = np.zeros(pad_shape)
+        x_new = np.concatenate((x, pad), axis=0)
+    else:
+        x_new = x[0:max_len]
+
+    return x_new
 
 composer_selection = pd.read_csv("data/composer_selection.csv", header=0)
 composer_selection['canonical_composer'] = composer_selection['canonical_composer'].astype("category")
@@ -13,9 +40,9 @@ label_length = len(composer_selection["canonical_composer"].value_counts())
 X = np.zeros((int(16*data_length), 300, 64))
 Y = np.zeros((int(16*data_length), label_length))
 
-for i in range(data_length):
+for i in tqdm(range(data_length)):
     performance = composer_selection.iloc[i]
-    filepath = "data/"+performance['audio_filename']
+    filepath = "/import/c4dm-datasets/maestro-v2.0.0/"+performance['audio_filename']
     label_id = performance['composer_label']
     wav, fs = librosa.load(filepath, sr=44100, offset=10, duration=60)
     mel = librosa.feature.melspectrogram(wav, 
@@ -39,3 +66,6 @@ for i in range(data_length):
     
     X[int(i*16):int((i+1)*16),] = mel
     Y[int(i*16):int((i+1)*16),] = y
+
+np.save("data_X", X)
+np.save("data_Y", Y)
