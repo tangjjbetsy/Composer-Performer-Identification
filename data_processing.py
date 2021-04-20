@@ -1,6 +1,7 @@
 import librosa
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 def norm(spec):
@@ -67,5 +68,9 @@ for i in tqdm(range(data_length)):
     X[int(i*16):int((i+1)*16),] = mel
     Y[int(i*16):int((i+1)*16),] = y
 
-np.save("data_X", X)
-np.save("data_Y", Y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.1)
+
+np.save("X_train", X_train)
+np.save("y_train", y_train)
+np.save("X_test", X_test)
+np.save("y_test", y_test)
