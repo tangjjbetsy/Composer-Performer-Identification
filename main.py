@@ -29,8 +29,8 @@ def data_loader(data_X, data_y):
     size = data.len
     loader = DataLoader(dataset=data,           
                     batch_size=BATCH_SIZE, 
-                    shuffle=shuffle,
-                    num_workers=num_workers)
+                    shuffle=True,
+                    num_workers=2)
     return loader
 
 def checkpoint(net, save_path, acc, loss, iterations):
