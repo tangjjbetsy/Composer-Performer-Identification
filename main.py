@@ -176,6 +176,7 @@ if __name__ == "__main__":
 
     print('\n----------------------------- EXPERIMENT -----------------------------')
     net = network.resnet50().to(device)
+    print(net)
     optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
     criterion = nn.CrossEntropyLoss()
     net, fp = train(optimizer, criterion, net, device, 50)
