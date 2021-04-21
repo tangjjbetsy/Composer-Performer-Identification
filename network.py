@@ -16,6 +16,8 @@ class ResNet(torchvision.models.resnet.ResNet):
             for i in range(2, 5):
                 getattr(self, 'layer%d'%i)[0].conv1.stride = (2,2)
                 getattr(self, 'layer%d'%i)[0].conv2.stride = (1,1)
+        self.conv1 = nn.Conv2d(16, self.inplanes, kernel_size=7, stride=2, padding=3,
+                               bias=False)
 
 
 def resnet18(pretrained=False):
