@@ -33,8 +33,8 @@ composer_selection['composer_label'] = composer_selection['canonical_composer'].
 data_length = len(composer_selection) 
 label_length = len(composer_selection["canonical_composer"].value_counts())
 
-X = np.zeros(data_length, 16, 300, 64))
-Y = np.zeros(data_length, label_length))
+X = np.zeros((data_length, 16, 300, 64))
+Y = np.zeros((data_length, label_length))
 
 for i in tqdm(range(data_length)):
     performance = composer_selection.iloc[i]
