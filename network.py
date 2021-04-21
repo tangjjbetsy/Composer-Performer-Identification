@@ -71,7 +71,7 @@ class Resnet(nn.Module):
     # 224*224
     def __init__(self, block, num_layer, n_classes=1000, input_channels=16):
         super(Resnet, self).__init__()
-        self.in_channels = 64
+        self.in_channels = 256
         self.conv1 = nn.Conv2d(input_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.maxpool = nn.MaxPool2d(3, stride=2, padding=1)
