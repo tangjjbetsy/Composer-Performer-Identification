@@ -167,7 +167,7 @@ def test(net, fp, validation, device):
 if __name__ == "__main__":
     if torch.cuda.is_available():
         torch.cuda.set_device(1)
-        device = torch.device('cuda:{}'.format(gpu))
+        device = torch.device('cuda:{}'.format(1))
         print("Using GPU for training")
     else:
         device = torch.device('cpu')
