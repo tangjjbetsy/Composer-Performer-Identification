@@ -2,13 +2,8 @@ import librosa
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
-
-def norm(spec):
-    mean = np.reshape(np.mean(spec, axis=1), (spec.shape[0],1))
-    std = np.reshape(np.std(spec, axis=1), (spec.shape[0],1))
-    spec = np.divide(np.subtract(spec,np.repeat(mean, spec.shape[1], axis=1)), np.repeat(std, spec.shape[1], axis=1))
-    return spec
 
 def pad_trunc_seq(x, max_len):
     """Pad or truncate a sequence data to a fixed length. 
@@ -38,8 +33,8 @@ composer_selection['composer_label'] = composer_selection['canonical_composer'].
 data_length = len(composer_selection) 
 label_length = len(composer_selection["canonical_composer"].value_counts())
 
-X = np.zeros((int(16*data_length), 300, 64))
-Y = np.zeros((int(16*data_length), label_length))
+X = np.zeros(data_length, 16, 300, 64))
+Y = np.zeros(data_length, label_length))
 
 for i in tqdm(range(data_length)):
     performance = composer_selection.iloc[i]
@@ -55,22 +50,28 @@ for i in tqdm(range(data_length)):
                                          fmax =8000)
     # mel = librosa.power_to_db(mel)
     mel = np.log(mel+1e-8)
-    mel = norm(mel)
-
     mel = mel.transpose((1,0))
     mel = pad_trunc_seq(mel, 4800)
     mel = mel.reshape((16, 300, 64))
     
     y = np.zeros((1, label_length))
     y[0, label_id] = 1
-    y = np.repeat(y, 16, axis=0)
     
-    X[int(i*16):int((i+1)*16),] = mel
-    Y[int(i*16):int((i+1)*16),] = y
+    X[i] = mel
+    Y[i] = y
 
+#normalization
+scaler = StandardScaler()
+X = scaler.transform(X.reshape((-1,64)))
+X = X.reshape((-1, 16, 300, 64))
+
+#spliting
 X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state=42, test_size=0.1)
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, random_state=42, test_size=0.11)
 
 np.save("X_train", X_train)
 np.save("y_train", y_train)
 np.save("X_test", X_test)
 np.save("y_test", y_test)
+np.save("X_val", X_val)
+np.save("y_val", y_val)

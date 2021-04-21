@@ -5,7 +5,9 @@ import torch
 import numpy as np
 from torch.utils.data.dataset import random_split
 from torch.utils.data import Dataset, DataLoader
+import network
 import config
+
 
 
 class DealDataset(Dataset):
@@ -20,35 +22,14 @@ class DealDataset(Dataset):
     def __len__(self):
         return self.len
 
-def data_loader(status, shuffle=False, validation=False, num_workers=2):
-    if status = "train":
-        data_X = np.load("X_train.npy")
-        data_y = np.load("y_train.npy")
-    else:
-        data_X = np.load("X_test.npy")
-        data_y = np.load("y_test.npy")
-    
+def data_loader(data_X, data_y):    
     data = DealDataset(data_X, data_y)
     size = data.len
-    
-    if validation:
-        train, dev = random_split(data, [int(size*SPLIT_RATE), size-int(size*SPLIT_RATE)])
-        train, dev = DealDataset(train[:][0],train[:][1]), DealDataset(dev[:][0],dev[:][1])
-        train_loader = DataLoader(dataset=train,
-                        batch_size=BATCH_SIZE, 
-                        shuffle=shuffle,
-                        num_workers=num_workers)
-        dev_loader = DataLoader(dataset=dev,           
-                        batch_size=BATCH_SIZE, 
-                        shuffle=shuffle,
-                        num_workers=num_workers)
-        return train_loader, dev_loader
-    else:
-        loader = DataLoader(dataset=data,           
-                        batch_size=BATCH_SIZE, 
-                        shuffle=shuffle,
-                        num_workers=num_workers)
-        return loader
+    loader = DataLoader(dataset=data,           
+                    batch_size=BATCH_SIZE, 
+                    shuffle=shuffle,
+                    num_workers=num_workers)
+    return loader
 
 def checkpoint(net, save_path, acc, loss, iterations):
     snapshot_prefix = os.path.join(save_path, 'snapshot_' + net._class_name())
@@ -71,7 +52,8 @@ def train(optimizer, criterion, net, device, epoches, save_path=SAVEPATH):
         os.makedirs(save_path)
     print(header)
 
-    train_loader, dev_loader = data_loader("train", True, True)
+    train_loader = data_loader(np.load("X_train.npy"), np.load("y_train.npy"))
+    dev_loader = data_loader(np.load("X_val.npy"), np.load("y_val.npy"))
 
     for epoch in range(epoches):  # loop over the dataset multiple times
         correct, total = 0, 0
@@ -180,3 +162,18 @@ def test(net, fp, validation, device):
     print(total,correct)
     print('Accuracy: %.2f %%' % acc)
     return acc, np.ravel(y_true), np.ravel(y_pred)
+
+
+if __name__ == "__main__":
+    if torch.cuda.is_available():
+        torch.cuda.set_device(1)
+        device = torch.device('cuda:{}'.format(gpu))
+        print("Using GPU for training")
+    else:
+        device = torch.device('cpu')
+
+    print('\n----------------------------- EXPERIMENT %d -----------------------------' % (i+1))
+    net = network.resnet50().to(device)
+    optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
+    criterion = nn.CrossEntropyLoss()
+    net, fp = train(optimizer, criterion, net, device, 50)
