@@ -62,6 +62,7 @@ for i in tqdm(range(data_length)):
 
 #normalization
 scaler = StandardScaler()
+scaler.fit(X.reshape((-1,64)))
 X = scaler.transform(X.reshape((-1,64)))
 X = X.reshape((-1, 16, 300, 64))
 
