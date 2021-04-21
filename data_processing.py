@@ -66,9 +66,19 @@ scaler.fit(X.reshape((-1,64)))
 X = scaler.transform(X.reshape((-1,64)))
 X = X.reshape((-1, 16, 300, 64))
 
+#indexes matrix
+a = np.arange(120).reshape(24,5)
+n1 = np.arange(24)
+n2 = np.arange(3)
+a = a[np.ix_(n1, n2)]
+
 #spliting
-X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state=42, test_size=0.1)
-X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, random_state=42, test_size=0.11)
+X_train = X[a,]
+y_train = Y[a,]
+X_test = X[3:-1:5,]
+y_test = Y[3:-1:5,]
+X_val = X[4:-1:5,]
+y_val = Y[4:-1:5,]
 
 np.save("X_train", X_train)
 np.save("y_train", y_train)
