@@ -6,7 +6,7 @@ import numpy as np
 from torch.utils.data.dataset import random_split
 from torch.utils.data import Dataset, DataLoader
 import network
-import config
+from config import *
 
 
 
