@@ -70,7 +70,7 @@ X = X.reshape((-1, 16, 300, 64))
 a = np.arange(120).reshape(24,5)
 n1 = np.arange(24)
 n2 = np.arange(3)
-a = a[np.ix_(n1, n2)]
+a = a[np.ix_(n1, n2)].flatten()
 
 #spliting
 X_train = X[a,]
