@@ -172,7 +172,7 @@ if __name__ == "__main__":
     else:
         device = torch.device('cpu')
 
-    print('\n----------------------------- EXPERIMENT %d -----------------------------' % (i+1))
+    print('\n----------------------------- EXPERIMENT -----------------------------')
     net = network.resnet50().to(device)
     optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=0.001)
     criterion = nn.CrossEntropyLoss()
